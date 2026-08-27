@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// main inicializa o servidor HTTP e registra suas rotas.
+// main e o ponto de entrada que conecta o banco, monta as camadas da aplicacao e inicia o servidor HTTP.
 func main() {
 
 	server := gin.Default()
@@ -34,5 +34,7 @@ func main() {
 
 	// Mapeando as rotas
 	server.GET("/products", ProductController.GetProducts)
+	server.POST("/product", ProductController.CreateProduct)
+	server.GET("/product/:productId", ProductController.GetProdutctById)
 	server.Run(":8000")
 }
