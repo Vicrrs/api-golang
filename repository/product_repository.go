@@ -6,16 +6,19 @@ import (
 	"go-api/model"
 )
 
+// ProductRepository e a camada que executa operacoes de produtos diretamente no banco de dados.
 type ProductRepository struct {
 	connection *sql.DB
 }
 
+// NewProductRepository cria um repositorio de produtos usando a conexao informada.
 func NewProductRepository(connection *sql.DB) ProductRepository {
 	return ProductRepository{
 		connection: connection,
 	}
 }
 
+// GetProducts consulta e retorna todos os produtos armazenados no banco de dados.
 func (pr *ProductRepository) GetProducts() ([]model.Product, error) {
 	query := "SELECT id, product_name, price FROM product"
 
@@ -45,4 +48,58 @@ func (pr *ProductRepository) GetProducts() ([]model.Product, error) {
 	rows.Close()
 
 	return productList, nil
+}
+
+// CreateProduct insere um produto no banco e retorna o identificador gerado.
+func (pr *ProductRepository) CreateProduct(product model.Product) (int, error) {
+
+	var id int
+	query, err := pr.connection.Prepare(
+		"INSERT INTO product (product_name, price) VALUES ($1, $2) RETURNING id",
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+
+	err = query.QueryRow(product.Name, product.Price).Scan(&id)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+
+	query.Close()
+	return id, nil
+}
+
+// GetProdutctById consulta e retorna o produto correspondente ao identificador informado.
+func (pr *ProductRepository) GetProdutctById(id_product int) (*model.Product, error) {
+
+	query, err := pr.connection.Prepare("SELECT * FROM product WHERE id = $1")
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	var produto model.Product
+
+	err = query.QueryRow(id_product).Scan(
+		&produto.ID,
+		&produto.Name,
+		&produto.Price,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	query.Close()
+	return &produto, nil
+
 }
