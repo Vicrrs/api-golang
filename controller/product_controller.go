@@ -91,3 +91,36 @@ func (p *productController) GetProdutctById(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, product)
 }
+
+// DeletProduct remove o produto cujo ID foi informado na URL e retorna o resultado da operação
+func (p *productController) DeleteProduct(ctx *gin.Context) {
+	id := ctx.Param("productId")
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, model.Response{
+			Message: "Id do produto não pode ser nulo.",
+		})
+		return
+	}
+
+	productID, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, model.Response{
+			Message: "Id do produto precisa ser um número.",
+		})
+		return
+	}
+
+	deleted, err := p.productUseCase.DeleteProduct(productID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	if !deleted {
+		ctx.JSON(http.StatusNotFound, model.Response{
+			Message: "Produto não foi encontrado na base de dados.",
+		})
+		return
+	}
+	ctx.Status(http.StatusNoContent)
+}
