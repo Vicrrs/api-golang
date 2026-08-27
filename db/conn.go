@@ -15,6 +15,7 @@ const (
 	dbname   = "postgres"
 )
 
+// ConnectDB abre uma conexao com o PostgreSQL, valida seu funcionamento e a retorna para a aplicacao.
 func ConnectDB() (*sql.DB, error) {
 
 	psqlInfo := fmt.Sprintf(
