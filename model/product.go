@@ -1,6 +1,6 @@
 package model
 
-// Product representa um produto e seus dados expostos pela API.
+// Product e o modelo que representa um produto persistido e transportado pela API.
 type Product struct {
 	ID    int     `json:"id_products"`
 	Name  string  `json:"name"`
