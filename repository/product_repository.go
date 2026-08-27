@@ -103,3 +103,21 @@ func (pr *ProductRepository) GetProdutctById(id_product int) (*model.Product, er
 	return &produto, nil
 
 }
+
+// DeleteProduct remove do banco o produto identificado pelo ID e informa se ele existia
+func (pr *ProductRepository) DeleteProduct(idProduct int) (bool, error) {
+	result, err := pr.connection.Exec(
+		"DELETE FROM product WHERE id = $1",
+		idProduct,
+	)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsAffected > 0, nil
+}
