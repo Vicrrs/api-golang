@@ -46,3 +46,8 @@ func (pu *ProductUsecase) GetProdutctById(id_product int) (*model.Product, error
 	}
 	return product, nil
 }
+
+// DeleteProduct solicita ao repositorio a remocao do produto identificado pelo ID.
+func (pu *ProductUsecase) DeleteProduct(idProduct int) (bool, error) {
+	return pu.repository.DeleteProduct(idProduct)
+}
